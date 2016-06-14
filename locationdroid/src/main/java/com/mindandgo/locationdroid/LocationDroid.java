@@ -237,7 +237,7 @@ public abstract class LocationDroid implements LocationListener {
      * @return the best last known location. Could return null.
      *
      */
-    public Location startLocationService() throws SecurityException{
+    public Location start() throws SecurityException{
         if (usingGps) {
             if (isGpsServiceOn()) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) maxTimeBetweenUpdates, precision, this);
@@ -260,7 +260,7 @@ public abstract class LocationDroid implements LocationListener {
     /**
      * Stop the location service
      */
-    public void stopLocationService() throws SecurityException {
+    public void stop() throws SecurityException {
         locationManager.removeUpdates(this);
     }
 
