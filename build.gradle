@@ -3,10 +3,17 @@
 buildscript {
     repositories {
         jcenter()
+        mavenLocal()
+        maven { url "https://jitpack.io" }
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0'
 
+        // Uncomment once Jake release a version of his plugin fixed for AS 2.0
+        // classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.+'
+        // Use fixed version from jitpack in the meantime
+        classpath 'com.github.JakeWharton:sdk-manager-plugin:1d29782dd6'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -15,6 +22,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenLocal()
+        maven { url "https://jitpack.io" }
+        mavenCentral()
     }
 }
 
