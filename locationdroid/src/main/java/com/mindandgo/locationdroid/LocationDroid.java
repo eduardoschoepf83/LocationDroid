@@ -19,7 +19,7 @@ public abstract class LocationDroid implements LocationListener {
 
     private final LocationManager locationManager;
     private Location currentLocation = null;
-    private float precision;
+    private float distanceBetweenUpdates;
     private float maxTimeBetweenUpdates;
     private boolean usingGps = true;
     private boolean usingNetwork = true;
@@ -28,21 +28,21 @@ public abstract class LocationDroid implements LocationListener {
     // ==========================================================
     // Error messages
     // ==========================================================
-    public static final String PRECISION_ERROR = "Precision cannot be lower than 1";
-    public static final String MAX_TIME_ERROR = "Default max time between updates cannot be lower than 1";
+    private static final String PRECISION_ERROR = "Distance between updates cannot be lower than 1 meter";
+    private static final String MAX_TIME_ERROR = "Default max time between updates cannot be lower than 1 second";
 
     // ==========================================================
     // Constants
     // ==========================================================
-    public static final float DEFAULT_PRECISION = 10f;
-    public static final float DEFAULT_MAX_TIME = 30f;
+    private static final float DEFAULT_PRECISION = 10f;
+    private static final float DEFAULT_MAX_TIME = 30f;
 
     // ==========================================================
     // Constructors
     // ==========================================================
     /**
      *
-     * @param context , the context to be used to construct the Location Service
+     * @param context , the context to be used to construct the LocationDroid class.
      */
     @RequiresPermission(anyOf = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     public LocationDroid(Context context) throws SecurityException {
@@ -51,41 +51,41 @@ public abstract class LocationDroid implements LocationListener {
 
     /**
      *
-     * @param context , the context to be used to construct the Location Service
-     * @param precision , the number of meters between two currentLocation updates, this value is used to
-     *                  calculate the maximum time between two currentLocation updates according the speed.
+     * @param context , the context to be used to construct the the LocationDroid class.
+     * @param distanceBetweenUpdates , the number of meters between two location updates, this value is used to
+     *                  calculate the maximum time between two location updates according the speed.
      *                  The maxTimeBetweenUpdates is used if no speed available.
      *                  Default = 10 meters.
      */
     @RequiresPermission(anyOf = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-    public LocationDroid(Context context, float precision) throws SecurityException{
-        this(context, precision, DEFAULT_MAX_TIME);
+    public LocationDroid(Context context, float distanceBetweenUpdates) throws SecurityException{
+        this(context, distanceBetweenUpdates, DEFAULT_MAX_TIME);
     }
 
     /**
      *
-     * @param context , the context to be used to construct the Location Service
-     * @param precision , the number of meters between two currentLocation updates, this value is used to
-     *                  calculate the maximum time between two currentLocation updates according the speed.
+     * @param context , the context to be used to construct the LocationDroid class.
+     * @param distanceBetweenUpdates , the number of meters between two location updates, this value is used to
+     *                  calculate the maximum time between two location updates according the speed.
      *                  The maxTimeBetweenUpdates is used if no speed available.
      *                  Default = 10 meters.
-     * @param maxTimeBetweenUpdates , the maximum time between two currentLocation updates,
-     *                              if their is not best currentLocation provided during this maximum time
+     * @param maxTimeBetweenUpdates , the maximum time between two location updates,
+     *                              if their is not best location provided during this maximum time
      *                              the current currentLocation is updated even if this one has a worst
      *                              accuracy.
      *                              Default = 30 seconds
      */
     @RequiresPermission(anyOf = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-    public LocationDroid(Context context, float precision, float maxTimeBetweenUpdates) throws SecurityException{
+    public LocationDroid(Context context, float distanceBetweenUpdates, float maxTimeBetweenUpdates) throws SecurityException{
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        this.precision = precision;
+        this.distanceBetweenUpdates = distanceBetweenUpdates;
         this.maxTimeBetweenUpdates = maxTimeBetweenUpdates;
     }
 
     // ==========================================================
     // Last best known location
     // ==========================================================
-    private void getLastBestKnowLocation() throws SecurityException{
+    private void getLastBestKnownLocation() throws SecurityException{
         Location gpsLocation = null;
         Location networkLocation;
         Location passiveLocation;
@@ -184,7 +184,7 @@ public abstract class LocationDroid implements LocationListener {
         float maxTimeBetweenUpdates = getMaxTimeBetweenUpdates(newLocation);
 
         if (currentLocation != null) {
-            // if the newLocation accuracy is better than the location accuracy
+            // if the newLocation accuracy is better than the current location accuracy
             if (newLocation.getAccuracy() <= currentLocation.getAccuracy()) {
                 replaceLocation(newLocation);
             }
@@ -204,11 +204,11 @@ public abstract class LocationDroid implements LocationListener {
     }
 
     private float getMaxTimeBetweenUpdates(Location newLocation) {
-        // The maximum time between location update is calculated according the 'precision'
+        // The maximum time between location update is calculated according the 'distanceBetweenUpdates'
         // and the speed given by the last location.
         // The maxTimeBetweenUpdates is the time that the user need to do the distance set
-        // by the precision.
-        float time = precision / newLocation.getSpeed();
+        // by the distanceBetweenUpdates.
+        float time = distanceBetweenUpdates / newLocation.getSpeed();
 
         // Default value for maxTimeBetweenUpdates
         float maxTimeBetweenUpdates = this.maxTimeBetweenUpdates;
@@ -240,20 +240,20 @@ public abstract class LocationDroid implements LocationListener {
     public Location start() throws SecurityException{
         if (usingGps) {
             if (isGpsServiceOn()) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) maxTimeBetweenUpdates, precision, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) maxTimeBetweenUpdates, distanceBetweenUpdates, this);
             }
         }
         if (usingNetwork) {
             if (isNetworkServiceOn()) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) maxTimeBetweenUpdates, precision, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) maxTimeBetweenUpdates, distanceBetweenUpdates, this);
             }
         }
         if (usingPassive) {
             if (isPassiveServiceOn()) {
-                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, (long) maxTimeBetweenUpdates, precision, this);
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, (long) maxTimeBetweenUpdates, distanceBetweenUpdates, this);
             }
         }
-        getLastBestKnowLocation();
+        getLastBestKnownLocation();
         return currentLocation;
     }
 
@@ -325,8 +325,8 @@ public abstract class LocationDroid implements LocationListener {
     // ==========================================================
     // Getters
     // ==========================================================
-    public float getPrecision() {
-        return precision;
+    public float getDistanceBetweenUpdates() {
+        return distanceBetweenUpdates;
     }
 
     public float getMaxTimeBetweenUpdates() {
@@ -336,17 +336,17 @@ public abstract class LocationDroid implements LocationListener {
     // ==========================================================
     // Setters -- Options
     // ==========================================================
-    public LocationDroid setPrecision(float precision) {
-        if (precision <= 0) {
+    public LocationDroid setDistanceBetweenUpdates(float distanceBetweenUpdates) {
+        if (distanceBetweenUpdates <= 0) {
             throw new IllegalArgumentException(PRECISION_ERROR);
         } else {
-            this.precision = precision;
+            this.distanceBetweenUpdates = distanceBetweenUpdates;
         }
         return this;
     }
 
     public LocationDroid setMaxTimeBetweenUpdates(float maxTimeBetweenUpdates) {
-        if (precision <= 0) {
+        if (distanceBetweenUpdates <= 0) {
             throw new IllegalArgumentException(MAX_TIME_ERROR);
         } else {
             this.maxTimeBetweenUpdates = maxTimeBetweenUpdates;
