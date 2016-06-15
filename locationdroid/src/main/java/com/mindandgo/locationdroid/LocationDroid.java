@@ -273,14 +273,10 @@ public abstract class LocationDroid implements LocationListener {
     }
 
     @Override
-    public void onProviderEnabled(String s) {
-
-    }
+    public abstract void onProviderEnabled(String s);
 
     @Override
-    public void onProviderDisabled(String s) {
-
-    }
+    public abstract void onProviderDisabled(String s);
 
     /**
      * Callback called when a provider (GPS, Network or Passive) change is status.
