@@ -10,10 +10,20 @@ LocationDroid locationDroid = new LocationDroid(context) {
     public void onNewLocation(Location location) {
         // TODO : do something with the location
     }
-
+    
     @Override
-    public void serviceProviderStatusListener(String s, int i, Bundle bundle) {
-        // TODO : do something when a status of one of the providers change
+    public void onProviderEnabled(String s){
+        // TODO : do something when a provider is enabled
+    }
+    
+    @Override
+    public void onProviderDisabled(String s){
+        // TODO : do something when a provider is disabled
+    }
+    
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle bundle){
+        // TODO : do something when a provider change its status
     }
 };
 ```
@@ -50,5 +60,5 @@ locationDroid.setMaxTimeBetweenUpdates(10f);
 ###Change the distance between two location updates
 Default: 10 meters
 ```
-locationDroid.setPrecision(5f);
+locationDroid.setDistanceBetweenUpdates(5f);
 ```
