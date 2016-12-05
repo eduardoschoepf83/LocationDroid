@@ -1,17 +1,11 @@
-apply plugin: 'com.android.library'
-
-
-// Version code management
-def versionMajor = 1
-def versionMinor = 0
-def versionPatch = 0
-def versionBuild = System.getenv('BUILD_NUMBER') // Build number read from CI
-if (versionBuild == null) {
-    versionBuild = 0
-} else {
-    versionBuild = versionBuild.toInteger()
+plugins {
+    id "com.github.dcendents.android-maven" version "1.5"
 }
-def version_name = ""
+
+group = GROUP
+version = LOCATIONDROID_VERSION
+
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
@@ -20,23 +14,11 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode versionMajor * 10000000 + versionMinor * 100000 + versionPatch * 1000 + versionBuild
-        version_name = "${versionMajor}.${versionMinor}.${versionPatch}-${versionBuild}"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    // Rename apk files to include versionName
-    // from http://stackoverflow.com/a/27068573/115145
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(
-                    output.outputFile.parent,
-                    output.outputFile.name.replace("-release.aar", "-${version_name}.aar"))
         }
     }
 }
