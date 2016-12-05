@@ -57,6 +57,16 @@ public class LocationDroidTest{
             }
 
             @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+
+            @Override
             public void serviceProviderStatusListener(String provider, int status, Bundle bundle) {
 
             }
@@ -84,6 +94,16 @@ public class LocationDroidTest{
             @Override
             public void onNewLocation(Location location) {
                 setBestLocation(location);
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+                
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
             }
 
             @Override
