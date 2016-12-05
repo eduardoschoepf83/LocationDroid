@@ -63,6 +63,14 @@ Default: 10 meters
 locationDroid.setDistanceBetweenUpdates(5f);
 ```
 
+
+Gradle
+--------
+
+```groovy
+compile 'com.xavierbauquet.locationdroid:locationdroid:1.0.0'
+```
+
 License
 --------
 
