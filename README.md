@@ -66,6 +66,13 @@ locationDroid.setDistanceBetweenUpdates(5f);
 
 Gradle
 --------
+```groovy
+repositories {
+    maven {
+            url  "http://dl.bintray.com/xavier-bauquet/Android"
+    }
+}
+```
 
 ```groovy
 compile 'com.xavierbauquet.locationdroid:locationdroid:1.0.0'
